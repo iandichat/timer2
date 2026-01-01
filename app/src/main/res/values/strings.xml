@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Timer2</string>
+    <string name="enable_monitoring">화면 시간 모니터링 활성화</string>
+    <string name="time_limit_label">시간 제한 (분)</string>
+    <string name="current_status">현재 상태: %s</string>
+    <string name="status_disabled">비활성화됨</string>
+    <string name="status_screen_off">화면 꺼짐</string>
+    <string name="status_running">실행 중: %d분 %d초</string>
+    <string name="notification_title">화면 시간 알림</string>
+    <string name="notification_text">화면을 %d분 동안 계속 켜놨습니다!</string>
+    <string name="channel_name">화면 시간 모니터링</string>
+    <string name="channel_description">화면 시간 제한 알림</string>
+    <string name="foreground_notification_title">화면 시간 모니터링 중</string>
+    <string name="foreground_notification_text">화면 시간을 추적하고 있습니다</string>
+    <string name="save">저장</string>
+</resources>
