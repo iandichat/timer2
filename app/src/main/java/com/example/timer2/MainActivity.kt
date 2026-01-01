@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startTimerService() {
         val intent = Intent(this, TimerService::class.java)
+        intent.action = TimerService.ACTION_START_WITHOUT_RESET
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent)
         } else {

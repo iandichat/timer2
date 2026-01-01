@@ -27,6 +27,7 @@ class TimerService : Service() {
     companion object {
         const val ACTION_SCREEN_ON = "com.example.timer2.SCREEN_ON"
         const val ACTION_SCREEN_OFF = "com.example.timer2.SCREEN_OFF"
+        const val ACTION_START_WITHOUT_RESET = "com.example.timer2.START_WITHOUT_RESET"
         const val ACTION_TIMER_UPDATE = "com.example.timer2.TIMER_UPDATE"
         const val EXTRA_ELAPSED_SECONDS = "elapsed_seconds"
         private const val NOTIFICATION_ID = 1
@@ -82,9 +83,17 @@ class TimerService : Service() {
             ACTION_SCREEN_OFF -> {
                 stopTimer()
             }
+            ACTION_START_WITHOUT_RESET -> {
+                // Start service without resetting timer if already running
+                if (timerRunnable == null) {
+                    startTimer()
+                } else {
+                    // Just ensure foreground notification is shown
+                    startForeground(NOTIFICATION_ID, createForegroundNotification())
+                }
+            }
             else -> {
-                // Initial start - always start timer when service is started
-                // The screen state will be managed by ScreenStateReceiver
+                // Initial start - start timer when service is started
                 startTimer()
             }
         }
@@ -119,7 +128,7 @@ class TimerService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.foreground_notification_title))
             .setContentText(getString(R.string.foreground_notification_text))
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_paw_notification)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .build()

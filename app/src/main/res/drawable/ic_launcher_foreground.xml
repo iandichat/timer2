@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    
+    <!-- Main paw pad -->
+    <path
+        android:pathData="M324.5,282.26c-11.49,-19.8 -36.22,-33.5 -64.9,-33.5s-53.41,13.7 -64.9,33.5c-20.53,9.58 -33.5,23.62 -33.5,39.28c0,28.87 44.05,52.27 98.4,52.27s98.4,-23.4 98.4,-52.27c0,-15.66 -12.97,-29.7 -33.5,-39.28Z"
+        android:fillColor="#FFFFFF"/>
+    
+    <!-- Top right toe -->
+    <path
+        android:pathData="M295.77,176.77m-38.75,0a38.75,29.72 76.66 1,1 77.5,0a38.75,29.72 76.66 1,1 -77.5,0"
+        android:fillColor="#FFFFFF"/>
+    
+    <!-- Top left toe -->
+    <path
+        android:pathData="M212.93,176.77m-29.72,0a29.72,38.75 13.34 1,1 59.44,0a29.72,38.75 13.34 1,1 -59.44,0"
+        android:fillColor="#FFFFFF"/>
+    
+    <!-- Left toe -->
+    <path
+        android:pathData="M148.91,240.32m-26.12,0a26.12,34.05 30 1,1 52.24,0a26.12,34.05 30 1,1 -52.24,0"
+        android:fillColor="#FFFFFF"/>
+    
+    <!-- Right toe -->
+    <path
+        android:pathData="M363.09,231.51m-34.05,0a34.05,26.12 60 1,1 68.1,0a34.05,26.12 60 1,1 -68.1,0"
+        android:fillColor="#FFFFFF"/>
+</vector>
