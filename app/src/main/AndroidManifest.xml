@@ -33,15 +33,6 @@
                 android:value="Screen time monitoring" />
         </service>
 
-        <receiver
-            android:name=".ScreenStateReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON" />
-                <action android:name="android.intent.action.SCREEN_OFF" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

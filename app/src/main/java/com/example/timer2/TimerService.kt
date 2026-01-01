@@ -5,8 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -20,6 +22,7 @@ class TimerService : Service() {
     private var timerRunnable: Runnable? = null
     private var startTime: Long = 0
     private var currentElapsedSeconds: Long = 0
+    private var screenStateReceiver: BroadcastReceiver? = null
 
     companion object {
         const val ACTION_SCREEN_ON = "com.example.timer2.SCREEN_ON"
@@ -35,6 +38,40 @@ class TimerService : Service() {
         prefs = AppPreferences(this)
         notificationHelper = NotificationHelper(this)
         createNotificationChannel()
+        registerScreenStateReceiver()
+    }
+
+    private fun registerScreenStateReceiver() {
+        screenStateReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (context == null || intent == null) return
+                if (!prefs.isEnabled()) return
+
+                when (intent.action) {
+                    Intent.ACTION_SCREEN_ON -> {
+                        // Screen turned on - start timer
+                        prefs.setScreenOn(true)
+                        startTimer()
+                    }
+                    Intent.ACTION_SCREEN_OFF -> {
+                        // Screen turned off - stop timer
+                        prefs.setScreenOn(false)
+                        stopTimer()
+                    }
+                }
+            }
+        }
+
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_SCREEN_OFF)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(screenStateReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(screenStateReceiver, filter)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -149,5 +186,17 @@ class TimerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         stopTimer()
+        unregisterScreenStateReceiver()
+    }
+
+    private fun unregisterScreenStateReceiver() {
+        screenStateReceiver?.let {
+            try {
+                unregisterReceiver(it)
+            } catch (e: Exception) {
+                // Receiver not registered
+            }
+            screenStateReceiver = null
+        }
     }
 }
