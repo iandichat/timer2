@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity() {
 
         // Start service if enabled
         if (prefs.isEnabled()) {
+            prefs.setScreenOn(true)  // Assume screen is on when app is visible
             startTimerService()
         }
 

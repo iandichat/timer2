@@ -46,12 +46,9 @@ class TimerService : Service() {
                 stopTimer()
             }
             else -> {
-                // Initial start - check if screen is on
-                if (prefs.isScreenOn()) {
-                    startTimer()
-                } else {
-                    startForeground(NOTIFICATION_ID, createForegroundNotification())
-                }
+                // Initial start - always start timer when service is started
+                // The screen state will be managed by ScreenStateReceiver
+                startTimer()
             }
         }
         return START_STICKY
