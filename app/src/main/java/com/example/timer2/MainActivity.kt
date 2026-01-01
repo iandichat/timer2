@@ -26,7 +26,10 @@ class MainActivity : AppCompatActivity() {
 
     private val statusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            updateStatus()
+            intent?.let {
+                val elapsedSeconds = it.getLongExtra(TimerService.EXTRA_ELAPSED_SECONDS, -1L)
+                updateStatus(if (elapsedSeconds >= 0) elapsedSeconds else null)
+            }
         }
     }
 
@@ -68,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 stopTimerService()
             }
-            updateStatus()
+            updateStatus(null)
         }
 
         saveButton.setOnClickListener {
@@ -94,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             startTimerService()
         }
 
-        updateStatus()
+        updateStatus(null)
     }
 
     override fun onResume() {
@@ -105,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             registerReceiver(statusReceiver, filter)
         }
-        updateStatus()
+        updateStatus(null)
     }
 
     override fun onPause() {
@@ -131,16 +134,16 @@ class MainActivity : AppCompatActivity() {
         stopService(intent)
     }
 
-    private fun updateStatus() {
+    private fun updateStatus(elapsedSeconds: Long? = null) {
         if (!prefs.isEnabled()) {
             statusText.text = getString(R.string.current_status, getString(R.string.status_disabled))
         } else {
-            val elapsedSeconds = prefs.getElapsedTime()
-            if (elapsedSeconds == 0L) {
+            val elapsed = elapsedSeconds ?: prefs.getElapsedTime()
+            if (elapsed == 0L) {
                 statusText.text = getString(R.string.current_status, getString(R.string.status_screen_off))
             } else {
-                val minutes = (elapsedSeconds / 60).toInt()
-                val seconds = (elapsedSeconds % 60).toInt()
+                val minutes = (elapsed / 60).toInt()
+                val seconds = (elapsed % 60).toInt()
                 statusText.text = getString(R.string.current_status, getString(R.string.status_running, minutes, seconds))
             }
         }

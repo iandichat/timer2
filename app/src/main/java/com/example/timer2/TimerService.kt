@@ -19,11 +19,13 @@ class TimerService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private var timerRunnable: Runnable? = null
     private var startTime: Long = 0
+    private var currentElapsedSeconds: Long = 0
 
     companion object {
         const val ACTION_SCREEN_ON = "com.example.timer2.SCREEN_ON"
         const val ACTION_SCREEN_OFF = "com.example.timer2.SCREEN_OFF"
         const val ACTION_TIMER_UPDATE = "com.example.timer2.TIMER_UPDATE"
+        const val EXTRA_ELAPSED_SECONDS = "elapsed_seconds"
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "timer2_channel"
     }
@@ -93,6 +95,7 @@ class TimerService : Service() {
         stopTimer() // Stop any existing timer
         
         startTime = System.currentTimeMillis()
+        currentElapsedSeconds = 0L
         prefs.setElapsedTime(0L)
         
         startForeground(NOTIFICATION_ID, createForegroundNotification())
@@ -101,10 +104,17 @@ class TimerService : Service() {
             override fun run() {
                 val elapsedMillis = System.currentTimeMillis() - startTime
                 val elapsedSeconds = elapsedMillis / 1000
-                prefs.setElapsedTime(elapsedSeconds)
+                currentElapsedSeconds = elapsedSeconds
                 
-                // Broadcast update
-                sendBroadcast(Intent(ACTION_TIMER_UPDATE))
+                // Write to SharedPreferences only every 10 seconds to reduce disk I/O
+                if (elapsedSeconds % 10 == 0L) {
+                    prefs.setElapsedTime(elapsedSeconds)
+                }
+                
+                // Broadcast update with current elapsed time
+                val updateIntent = Intent(ACTION_TIMER_UPDATE)
+                updateIntent.putExtra(EXTRA_ELAPSED_SECONDS, elapsedSeconds)
+                sendBroadcast(updateIntent)
                 
                 // Check if limit reached
                 val limitMinutes = prefs.getTimeLimit()
@@ -116,6 +126,7 @@ class TimerService : Service() {
                     
                     // Reset timer and continue
                     startTime = System.currentTimeMillis()
+                    currentElapsedSeconds = 0L
                     prefs.setElapsedTime(0L)
                 }
                 
@@ -131,8 +142,11 @@ class TimerService : Service() {
             handler.removeCallbacks(it)
             timerRunnable = null
         }
+        currentElapsedSeconds = 0L
         prefs.setElapsedTime(0L)
-        sendBroadcast(Intent(ACTION_TIMER_UPDATE))
+        val updateIntent = Intent(ACTION_TIMER_UPDATE)
+        updateIntent.putExtra(EXTRA_ELAPSED_SECONDS, 0L)
+        sendBroadcast(updateIntent)
     }
 
     override fun onDestroy() {
